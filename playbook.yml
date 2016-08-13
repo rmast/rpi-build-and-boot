@@ -1,10 +1,9 @@
 ---
-- hosts: all
+- hosts: localhost
   remote_user: vagrant
-  sudo: yes
   vars:
-    of_version: of_v0.9.0_linuxarmv7l_release
-    image: 2015-09-24-raspbian-jessie.img
+    of_version: of_v0.9.3_linuxarmv6l_release
+    image: 2015-09-24-raspbian-jessie-na-install_dependencies.img
     offset_boot: 4194304
     offset_root: 62914560
   tasks:
