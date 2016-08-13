@@ -22,8 +22,9 @@ build a recent version of ansible within the Ubuntu-image:
 
 sudo apt-get install python-dev libffi-dev libssl-dev git python-pip
 sudo pip install https://pypi.python.org/packages/3.4/s/setuptools/setuptools-11.3.1-py2.py3-none-any.whl
+git clone https://github.com/ansible/ansible.git
 cd ansible/
-git checkout  780c363
+git checkout  v2.1.1.0-1
 git submodule update --init --recursive
 sudo make
 sudo make install
@@ -32,14 +33,16 @@ cd ..
 Make sure the ansible file will be processed locally:
 
 sudo mkdir /etc/ansible
-sudo vi /etc/ansible/hosts
-#to contain the line:
+
+sudo bash -c 'cat << EOF > /etc/ansible/hosts
 localhost ansible_connection=local
+EOF'	
 
 upload your files to (/home)/vagrant from the original git-repository:
 playbook.yml
-2015-09-24-raspbian-jessie-after-install_dependencies.img
 build_cross_gcc.sh
+
+and also 2015-09-24-raspbian-jessie-after-install_dependencies.img
 
 The file 2015-09-24-raspbian-jessie-after-install_dependencies.img is the resulting Pi-image of the install_dependencies.sh step in the original how-to.
 
