@@ -11,7 +11,7 @@
     - command: mkdir -p /opt/raspberrypi creates=/opt/raspberrypi
 
     - apt: name=nfs-kernel-server
-    - lineinfile: dest=/etc/exports line="/opt/raspberrypi/root 10.0.0.0/24(rw,sync,no_root_squash,no_subtree_check)"
+    - lineinfile: dest=/etc/exports line="/opt/raspberrypi/root 192.168.0.0/16(rw,sync,no_root_squash,no_subtree_check)"
 
     - lineinfile: dest=/etc/cron.d/opt_raspberrypi_root line="* * * * * root /bin/mount /opt/raspberrypi/root" create=yes
 
@@ -35,7 +35,7 @@
     - pip: name=httplib2
 
     - apt: name=tinyproxy
-    - lineinfile: dest="/etc/tinyproxy.conf" line="Allow 10.0.0.0/8"
+    - lineinfile: dest="/etc/tinyproxy.conf" line="Allow 192.168.0.0/16"
     - service: name=tinyproxy state=restarted
 
 
@@ -49,7 +49,7 @@
 
     # the pi is unbootable unless it is told not to mount the root filesystem from the card!
     - lineinfile: dest=/opt/raspberrypi/root/etc/fstab regexp="^\/dev\/mmcblk0p2" state="absent"
-    - replace: dest=/opt/raspberrypi/boot/cmdline.txt regexp="rootwait$" replace="dwc_otg.lpm_enable=0 console=ttyAMA0,115200 kgdboc=ttyAMA0,115200 console=tty1 elevator=deadline root=/dev/nfs rootfstype=nfs nfsroot=10.0.0.1:/opt/raspberrypi/root,udp,vers=3 rw fsck.repair=no rootwait ip=10.0.0.101:10.0.0.1:10.0.0.1:255.255.255.0:rpi:eth0:off smsc95xx.turbo_mode=N" backup=no
+    - replace: dest=/opt/raspberrypi/boot/cmdline.txt regexp="rootwait$" replace="dwc_otg.lpm_enable=0 console=ttyAMA0,115200 kgdboc=ttyAMA0,115200 console=tty1 elevator=deadline root=/dev/nfs rootfstype=nfs nfsroot=192.168.178.250:/opt/raspberrypi/root,udp,vers=3 rw fsck.repair=no rootwait ip=192.168.178.201:192.168.178.250:192.168.178.250:255.255.0.0:rpi:eth0:off smsc95xx.turbo_mode=N" backup=no
 
     # build helpies
     - file: path=/opt/RPI_BUILD_ROOT state=directory
