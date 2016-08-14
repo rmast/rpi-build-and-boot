@@ -103,12 +103,12 @@
     - command: chown -R vagrant /opt/raspberrypi/root/opt/{{of_version}}
 
 # forwarding traffic from eth0 (internet) to eth1 (rpi connection) with iptables
-- replace: dest=/etc/sysctl.conf regexp="^#net.ipv4.ip_forward=1$" replace="net.ipv4.ip_forward=1"
-- shell: /bin/echo 1 > /proc/sys/net/ipv4/ip_forward
-- command: iptables -A FORWARD -o eth0 -i eth1 -m conntrack --ctstate NEW -j ACCEPT
-- command: iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-- command: iptables -A POSTROUTING -t nat -j MASQUERADE
-- shell: /sbin/iptables-save | /usr/bin/tee /etc/iptables.backup
-- service: name=ufw state=restarted
+    - replace: dest=/etc/sysctl.conf regexp="^#net.ipv4.ip_forward=1$" replace="net.ipv4.ip_forward=1"
+    - shell: /bin/echo 1 > /proc/sys/net/ipv4/ip_forward
+    - command: iptables -A FORWARD -o eth0 -i eth1 -m conntrack --ctstate NEW -j ACCEPT
+    - command: iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+    - command: iptables -A POSTROUTING -t nat -j MASQUERADE
+    - shell: /sbin/iptables-save | /usr/bin/tee /etc/iptables.backup
+    - service: name=ufw state=restarted
   handlers:
 
