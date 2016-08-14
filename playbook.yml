@@ -47,7 +47,7 @@
     - lineinfile: dest=/etc/rc.local line="mount /opt/raspberrypi/root" insertbefore="exit 0"
     - lineinfile: dest=/etc/rc.local line="mount /opt/raspberrypi/boot" insertbefore="exit 0"
 
-    # the pi is unbootable unless it is told not to mount the root filesystem from the card!
+    # the rpi is unbootable unless it is told not to mount the root filesystem from the card!. also added dns to cmdline.txt and iptables filter. 
     - lineinfile: dest=/opt/raspberrypi/root/etc/fstab regexp="^\/dev\/mmcblk0p2" state="absent"
     - replace: dest=/opt/raspberrypi/boot/cmdline.txt regexp="rootwait$" replace="dwc_otg.lpm_enable=0 console=ttyAMA0,115200 kgdboc=ttyAMA0,115200 console=tty1 elevator=deadline root=/dev/nfs rootfstype=nfs nfsroot=192.168.178.250:/opt/raspberrypi/root,udp,vers=3 rw fsck.repair=no rootwait ip=192.168.178.201:192.168.178.250:192.168.178.250:255.255.0.0:rpi:eth0:off:8.8.4.4:8.8.8.8 smsc95xx.turbo_mode=N" backup=no
 
@@ -102,5 +102,13 @@
     - file: src=/opt/raspberrypi/root/opt/openframeworks dest=/opt/openframeworks state=link
     - command: chown -R vagrant /opt/raspberrypi/root/opt/{{of_version}}
 
+# forwarding traffic from eth0 (internet) to eth1 (rpi connection) with iptables
+- replace: dest=/etc/sysctl.conf regexp="^#net.ipv4.ip_forward=1$" replace="net.ipv4.ip_forward=1"
+- shell: /bin/echo 1 > /proc/sys/net/ipv4/ip_forward
+- command: iptables -A FORWARD -o eth0 -i eth1 -m conntrack --ctstate NEW -j ACCEPT
+- command: iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+- command: iptables -A POSTROUTING -t nat -j MASQUERADE
+- shell: /sbin/iptables-save | /usr/bin/tee /etc/iptables.backup
+- service: name=ufw state=restarted
   handlers:
 
