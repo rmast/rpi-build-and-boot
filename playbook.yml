@@ -8,7 +8,7 @@
     offset_root: 62914560
   tasks:
     - apt: upgrade=dist update_cache=yes
-    - command: mkdir -p /opt/raspberrypi creates=/opt/raspberrypi
+    - file: path=/opt/raspberrypi state=directory
 
     - apt: name=nfs-kernel-server
     - lineinfile: dest=/etc/exports line="/opt/raspberrypi/root 192.168.0.0/16(rw,sync,no_root_squash,no_subtree_check)"
