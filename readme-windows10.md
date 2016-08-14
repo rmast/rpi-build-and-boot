@@ -7,7 +7,7 @@ Install VirtualBox and Vagrant on Windows 10, but don't install ansible as that'
 
 Start the Ubuntu-virtual machine with 
 ```sh
-> vagrant up
+vagrant up
 ```
 
 from within a directory to which you downloaded ´Vagrantfile´ and the rest of this repository. 
@@ -15,7 +15,7 @@ from within a directory to which you downloaded ´Vagrantfile´ and the rest of 
 This will boot a headless virtual-machine on your Windows-10 PC which can be entered by ssh
 
 ```sh
-> vagrant ssh
+vagrant ssh
 ```
 
 If vagrant can't find ssh then follow the instructions that appear.
