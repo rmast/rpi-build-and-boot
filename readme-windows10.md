@@ -77,7 +77,7 @@ As the DNS is not working rightaway the internet-settings of the Pi can be updat
 ```sh
 sudo bash -c 'cat << EOF > /etc/network/interfaces
 # Please note that this file is written to be used with dhcpcd.
-# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'.
+# For static IP, consult /etc/dhcpcd.conf and man dhcpcd.conf.
 
 auto lo
 iface lo inet loopback
