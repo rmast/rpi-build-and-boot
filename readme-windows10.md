@@ -33,10 +33,11 @@ $ ls /vagrant
 
 Remark: shutting down this virtual machine makes you loose this /vagrant shared folder permanently, probably due to rights-issues, so do everything what you want with these files in one session.
 
-build a recent ubuntu-image ):
+build a recent ansible-version ):
 ```sh
 $ cd 
 $ . /vagrant/install_ansible.sh
+$ cd /vagrant
 ```
 
 edit the head of playbook.yml, to contain the local user and files to use, and the sizing if not using 2015-09-24-raspbian-jessie.img:
