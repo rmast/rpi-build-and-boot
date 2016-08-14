@@ -23,7 +23,7 @@ If vagrant can't find ssh then follow the instructions that appear.
 
 Within the ssh-session to the Ubuntu-image you can see the files in the Windows directory of your vagrantfile (in /vagrant):
 ```sh
-$ ls /vagrant
+ls /vagrant
 ```
 
 - playbook.yml
@@ -33,12 +33,15 @@ $ ls /vagrant
 
 Remark: shutting down this virtual machine makes you loose this /vagrant shared folder permanently, probably due to rights-issues, so do everything what you want with these files in one session.
 
-build a recent ansible-version ):
+build a recent ansible-version, reply with a lower-case 'y':
 ```sh
-$ cd 
-$ . /vagrant/install_ansible.sh
-$ cd /vagrant
+cd 
+. /vagrant/install_ansible.sh
+cd /vagrant
+
 ```
+
+
 
 edit the head of playbook.yml, to contain the local user and files to use, and the sizing if not using 2015-09-24-raspbian-jessie.img:
 ```sh
@@ -64,11 +67,29 @@ sudo ln -s /home/vagrant /vagrant
 
 Making the NFS-Pi-image is shown in the original how-to.
 
-You can reach your Pi with
+Probably after a reboot you can reach your Pi with
 
 ```sh
 ssh pi@192.168.178.201
 ```
+
+As the DNS is not working rightaway the internet-settings of the Pi can be updated:
+
+sudo bash -c 'cat << EOF > /etc/network/interfaces
+# Please note that this file is written to be used with dhcpcd.
+# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'.
+
+auto lo
+iface lo inet loopback
+
+ auto eth0
+    iface eth0 inet static
+        address 192.168.178.201
+        netmask 255.255.255.0
+        gateway 192.168.178.250
+EOF'	
+
+sudo /etc/init.d/networking restart
 
 I used a similar Ubuntu 14.04-install from VMWare with a SD-card mounted as second harddrive, but that should also be possible with VirtualBox. 
 You can use sfdisk -d /dev/sdb instead of fdisk -d (image) to show the exact entries as mentioned in the original readme.
