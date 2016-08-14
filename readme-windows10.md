@@ -74,7 +74,7 @@ ssh pi@192.168.178.201
 ```
 
 As the DNS is not working rightaway the internet-settings of the Pi can be updated:
-
+```sh
 sudo bash -c 'cat << EOF > /etc/network/interfaces
 # Please note that this file is written to be used with dhcpcd.
 # For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'.
@@ -88,8 +88,10 @@ iface lo inet loopback
         netmask 255.255.255.0
         gateway 192.168.178.250
 EOF'	
-
+```
+followed by
+```sh
 sudo /etc/init.d/networking restart
-
+```
 I used a similar Ubuntu 14.04-install from VMWare with a SD-card mounted as second harddrive, but that should also be possible with VirtualBox. 
 You can use sfdisk -d /dev/sdb instead of fdisk -d (image) to show the exact entries as mentioned in the original readme.
