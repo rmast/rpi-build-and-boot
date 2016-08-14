@@ -55,7 +55,7 @@ Then run the playbook:
 ```sh
 sudo ansible-playbook playbook.yml
 ```
-As your /vagrant shared folder won't show up at the next reboot:
+As your /vagrant shared folder won't show up at the next reboot, and rebooting is probably necessary for getting NFS to run properly:
 copy the raspberry-image to /home/vagrant and at the next bootup remove this empty vagrant directory by
 ```sh
 sudo rmdir /vagrant
@@ -63,6 +63,12 @@ sudo ln -s /home/vagrant /vagrant
 ```
 
 Making the NFS-Pi-image is shown in the original how-to.
+
+You can reach your Pi with
+
+```sh
+ssh pi@192.168.178.201
+```
 
 I used a similar Ubuntu 14.04-install from VMWare with a SD-card mounted as second harddrive, but that should also be possible with VirtualBox. 
 You can use sfdisk -d /dev/sdb instead of fdisk -d (image) to show the exact entries as mentioned in the original readme.
