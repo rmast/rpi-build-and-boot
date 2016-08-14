@@ -31,6 +31,7 @@ ls /vagrant
 - install_ansible.sh
 - 2015-09-24-raspbian-jessie.img (copied back from the Pi after the install_dependencies.sh step)
 
+Remark: The 2015-09-24-raspbian-jessie.img is even too small for an apt-get upgrade, so you will have to grow it soon.
 Remark: shutting down this virtual machine makes you loose this /vagrant shared folder permanently, probably due to rights-issues, so do everything what you want with these files in one session.
 
 build a recent ansible-version, reply with a lower-case 'y':
