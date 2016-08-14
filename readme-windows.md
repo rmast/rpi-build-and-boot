@@ -1,5 +1,5 @@
 If you want to see your raspberry pi boot from NFS of your virtual Ubuntu machine to be able to try this proposed
-cross-compilation-setup most of the automation scripts of the original twobitcircus/rpi-build-and-boot git repository will do: 
+cross-compilation-setup, which was originally developed for a OsX-host-system, most of the automation scripts of the original twobitcircus/rpi-build-and-boot git repository will do: 
  
 Install VirtualBox and Vagrant on Windows 10, but don't install ansible as that's not supported in Windows 10.
 Start the Ubuntu-virtual machine with ´vagrant up´ from within a directory with a ´Vagrantfile´ from which most lines are commented out:
