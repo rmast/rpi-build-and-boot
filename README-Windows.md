@@ -1,9 +1,9 @@
 # crosscompiling for RPi on Windows host via NFS
 
 If you want to see your raspberry pi boot from NFS of a virtual Ubuntu machine to be able to try this proposed
-cross-compilation-setup most of the automation scripts of the original readme will do. 
+cross-compilation-setup most of the automation scripts of the original README.md, https://github.com/twobitcircus/rpi-build-and-boot/blob/master/README.md will do, however ansible is not supported in Windows 10, and I prefer the 192.168.* - IP - range over the 10.* -range, which allows using the ethernet-connections already there for my LAN.
  
-Install VirtualBox and Vagrant on Windows 10, but don't install ansible as that's not supported in Windows 10.
+First install VirtualBox and Vagrant on Windows 10, but don't install ansible as that's not supported in Windows 10.
 
 From within a directory to which you downloaded ´Vagrantfile´ and the rest of this repository start the Ubuntu-virtual machine with 
 
@@ -28,10 +28,9 @@ ls /vagrant
 - playbook.yml
 - build_cross_gcc.sh
 - install_ansible.sh
-- 2015-09-24-raspbian-jessie.img (copied back from the Pi after the install_dependencies.sh step)
+- 2015-09-24-raspbian-jessie.img (copied back from the Pi after running of_v0.9.3_linuxarmv6l_release/scripts/linux/debian/install_dependencies.sh)
 
-Remark: The 2015-09-24-raspbian-jessie.img is even too small for an apt-get upgrade, so you will have to grow it soon.
-Remark: shutting down this virtual machine makes you loose this /vagrant shared folder permanently, probably due to rights-issues, so do everything what you want with these files in one session.
+Remark: The 2015-09-24-raspbian-jessie.img is a bit outdated. I also included a Playbook-file with offsets for the newer 2016-05-27-raspbian-jessie-lite.img
 
 build a recent ansible-version, reply with a lower-case 'y':
 ```sh
@@ -57,6 +56,17 @@ Then run the playbook:
 ```sh
 sudo ansible-playbook playbook.yml
 ```
+or when using the new 2016-05-27-raspbian-jessie-lite image:
+
+```sh
+sudo ansible-playbook playbook-jessie2016.yml
+```
+
+This 2015-09-24-raspbian-jessie image is already to small for an apt-get update/upgrade, so you'll probably need adding a gigabyte to the image:
+
+```sh
+sudo dd if=/dev/zero bs=10MiB of=/home/vagrant/2015-09-24-raspbian-jessie-after-install_dependencies.img conv=notrunc oflag=append count=100
+```
 
 For suspending and resuming the virtual machine in order to restore the /vagrant - shared folder you can use:
 - vagrant suspend
@@ -65,7 +75,7 @@ For suspending and resuming the virtual machine in order to restore the /vagrant
 After you stopped the machine you can restart it with
 - vagrant reload
 
-If you get a read/write error mounting /opt/raspberry/root with the way the shared folder is linked you can also copy the raspberry-image to /home/vagrant and at the next bootup (via Virtual Box in order not to link the /vagrant - shared folder) remove this empty /vagrant directory and make your own symlink by
+If you get many file errors during usage of the image mounted from the shared /vagrant - folder at /opt/raspberry/root (I do) you can also copy the raspberry-image to /home/vagrant and at the next bootup (poweroff and restart via Virtual Box in order not to link the /vagrant - shared folder) remove this empty /vagrant directory and make your own symlink by
 
 ```sh
 sudo rmdir /vagrant
@@ -104,3 +114,5 @@ sudo /etc/init.d/networking restart
 ```
 I used a similar Ubuntu 14.04-install from VMWare with a SD-card mounted as second harddrive, but that should also be possible with VirtualBox. 
 You can use sfdisk -d /dev/sdb instead of fdisk -d (image) to show the exact entries as mentioned in the original readme.
+
+I also tried the steps for the Vagrant Ubuntu/Trusty64, and Ubuntu/Xenial64 setups. Ubuntu/Trusty64 also works. Ubuntu/Xenial64 at the time of this writing (2016-08-15) still has issues with the /vagrant - share and another login-name.
