@@ -1,16 +1,15 @@
 # crosscompiling for RPi on Windows host via NFS
 
-If you want to see your raspberry pi boot from NFS of your virtual Ubuntu machine to be able to try this proposed
-cross-compilation-setup most of the automation scripts of the original twobitcircus/rpi-build-and-boot git repository will do: 
+If you want to see your raspberry pi boot from NFS of a virtual Ubuntu machine to be able to try this proposed
+cross-compilation-setup most of the automation scripts of the original readme will do. 
  
 Install VirtualBox and Vagrant on Windows 10, but don't install ansible as that's not supported in Windows 10.
 
-Start the Ubuntu-virtual machine with 
+From within a directory to which you downloaded ´Vagrantfile´ and the rest of this repository start the Ubuntu-virtual machine with 
+
 ```sh
 vagrant up
 ```
-
-from within a directory to which you downloaded ´Vagrantfile´ and the rest of this repository. 
 
 This will boot a headless virtual-machine on your Windows-10 PC which can be entered by ssh
 
@@ -43,7 +42,6 @@ cd /vagrant
 ```
 
 
-
 edit the head of playbook.yml, to contain the local user and files to use, and the sizing if not using 2015-09-24-raspbian-jessie.img:
 ```sh
 ---
@@ -59,14 +57,24 @@ Then run the playbook:
 ```sh
 sudo ansible-playbook playbook.yml
 ```
-As your /vagrant shared folder won't show up at the next reboot, and rebooting is probably necessary for getting NFS to run properly:
-copy the raspberry-image to /home/vagrant and at the next bootup remove this empty vagrant directory by
+
+For suspending and resuming the virtual machine in order to restore the /vagrant - shared folder you can use:
+- vagrant suspend
+- vagrant resume
+
+After you stopped the machine you can restart it with
+- vagrant reload
+
+If you get a read/write error mounting /opt/raspberry/root with the way the shared folder is linked you can also copy the raspberry-image to /home/vagrant and at the next bootup (via Virtual Box in order not to link the /vagrant - shared folder) remove this empty /vagrant directory and make your own symlink by
+
 ```sh
 sudo rmdir /vagrant
 sudo ln -s /home/vagrant /vagrant
 ```
 
-Making the NFS-Pi-image is shown in the original how-to.
+After a while a cron-script will mount /opt/raspberrypi/boot again from the image.
+
+For making the NFS-Pi-image it is sufficient to copy /opt/raspberrypi/boot/cmdline.txt back to the first partition of your SD-card. This will make your Pi mount the image in /vagrant of your virtual machine as root.
 
 Probably after a reboot you can reach your Pi with
 
