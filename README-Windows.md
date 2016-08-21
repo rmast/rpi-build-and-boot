@@ -1,8 +1,14 @@
 # crosscompiling for RPi on Windows host via NFS
 
-If you want to see your raspberry pi boot from NFS of a virtual Ubuntu machine to be able to try this proposed
-cross-compilation-setup most of the automation scripts of the original README.md, https://github.com/twobitcircus/rpi-build-and-boot/blob/master/README.md will do, however ansible is not supported in Windows 10, and I prefer the 192.168.* - IP - range over the 10.* -range, which allows using the ethernet-connections already there for my LAN.
- 
+I was interested in seeing my raspberry pi boot from NFS of a virtual Ubuntu machine on Windows to be able to cross compile, like proposed for OsX<sup id="a1">[1](#f1)</sup>
+
+To be able to enable this scenario for Windows I had to take some hurdles, as
+- Ansible is not supported in Windows 10
+- On my DHCP-hosted LAN the 192.168.* - IP - range is better equipped for connecting to the internet than 10.0.*.
+- The /vagrant shared folder gives File I/O errors when hosted from windows
+
+So this is how I did it:
+
 First install VirtualBox and Vagrant on Windows 10, but don't install ansible as that's not supported in Windows 10.
 
 From within a directory to which you downloaded ´Vagrantfile´ and the rest of this repository start the Ubuntu-virtual machine with 
@@ -116,3 +122,11 @@ I used a similar Ubuntu 14.04-install from VMWare with a SD-card mounted as seco
 You can use sfdisk -d /dev/sdb instead of fdisk -d (image) to show the exact entries as mentioned in the original readme.
 
 I also tried the steps for the Vagrant Ubuntu/Trusty64, and Ubuntu/Xenial64 setups. Ubuntu/Trusty64 also works. Ubuntu/Xenial64 at the time of this writing (2016-08-15) still has issues with the /vagrant - share and another login-name.
+
+Next:
+- Setting up or choosing a toolchain
+- Setting up distcc
+
+<b id="f1">1</b>
+- https://github.com/twobitcircus/rpi-build-and-boot/blob/master/README.md
+- https://github.com/chilcano/vagrant-rpi-build-and-boot/blob/master/README.md [↩](#a1)
