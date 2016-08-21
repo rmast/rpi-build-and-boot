@@ -88,7 +88,7 @@ sudo rmdir /vagrant
 sudo ln -s /home/vagrant /vagrant
 ```
 
-After a while a cron-script will mount /opt/raspberrypi/boot again from the image.
+After a while a cron-script (/etc/cron.d/opt_raspberrypi_root) will mount /opt/raspberrypi/boot again from the image.
 
 For making the NFS-Pi-image it is sufficient to copy /opt/raspberrypi/boot/cmdline.txt back to the first partition of your SD-card. This will make your Pi mount the image in /vagrant of your virtual machine as root.
 
