@@ -1,304 +1,131 @@
-# Vagrant box for Raspberry Pi (arm) cross-compiling using Vagrant, VirtualBox, Ansible and Python
+# crosscompiling for RPi on Windows host via NFS
 
-![Provisioning massively cross-compiled binaries to Raspberry Pi (armv7) using Vagrant, VirtualBox, Ansible and Python](https://github.com/chilcano/vagrant-rpi-build-and-boot/blob/master/blog-cross-compiling-kismet-raspberrypi-arm.png "Provisioning massively cross-compiled binaries to Raspberry Pi (armv7) using Vagrant, VirtualBox, Ansible and Python")
+I was interested in seeing my raspberry pi boot from NFS of a virtual Ubuntu machine on Windows to be able to cross compile, like proposed for OsX<sup id="a1">[1](#f1)</sup>
 
-## Requirements:
+To be able to enable this scenario for Windows I had to take some hurdles, as
+- Ansible is not supported in Windows 10
+- On my DHCP-hosted LAN the 192.168.* - IP - range is better equipped for connecting to the internet than 10.0.*.
+- The /vagrant shared folder gives File I/O errors when hosted from windows
 
-I'm using a Mac OS X (El Capitan - Version 10.11.3) with the next tools:
+So this is how I did it:
 
-- VirtualBox 5.0.16
-- Vagrant 1.8.1
-- Ansible 2.0.1.0 (installed via Pip)
-- Python 2.7.11
-- Raspberry Pi 2 Model B 
-- Raspbian OS (2015-09-24-raspbian-jessie.img)
-- OpenFramework v0.9.0 for cross-compiling (http://openframeworks.cc/versions/v0.9.0/of_v0.9.0_linuxarmv7l_release.tar.gz)
+First install VirtualBox and Vagrant on Windows 10, but don't install ansible as that's not supported in Windows 10.
 
+From within a directory to which you downloaded ´Vagrantfile´ and the rest of this repository start the Ubuntu-virtual machine with 
 
-## Preparing the Raspberry Pi
-
-
-__1. Copy RPi image to SD__
-
-Identify the disk (not partition) of your SD card, unmount and copy the image there:
-```bash
-$ diskutil list
-$ diskutil unmountDisk /dev/disk2
-$ cd /Users/Chilcano/Downloads/@isos_vms/raspberrypi-imgs
-$ sudo dd bs=1m if=2015-09-24-raspbian-jessie.img of=/dev/rdisk2
+```sh
+vagrant up
 ```
 
-__2. Connect the Raspberry Pi directly to your Host (MAC OS X)__
+This will boot a headless virtual-machine on your Windows-10 PC which can be entered by ssh
 
-Using an ethernet cable, connect your Raspberry Pi to your Host, in my case I've a MAC OS X and I'm going to share my WIFI Network connection. 
-Then, enabling `Internet Sharing` and the "Thunderbolt Ethernet" an IP address will be assigned to the Raspberry Pi, also Raspberry Pi will have Internet access/Network access and the MAC OS X can connect via SSH to the Raspberry Pi. 
-All that will be possible without a hub, switch, router, screen or keyboard, etc. This will be useful, because we are going to install new software in Raspberry Pi.
-
-After connect your Raspberry Pi to your MAC OS X, turn on by connecting an USB cable, in your MAC OS X open a Terminal and issue a SSH command, before re-generate the SSH keys.
-
-Note that the default hostname of any Raspberry Pi is `raspberrypi.local`.
-
-```bash
-// cleaning existing keys
-$ ssh-keygen -R raspberrypi.local
-
-// connect to RPi using `raspberry` as default password
-$ ssh pi@raspberrypi.local
+```sh
+vagrant ssh
 ```
 
-After connecting, you will check the assigned IP address and the shared Internet Connection. Now, check out your connection.
-```bash
-pi@raspberrypi:~ $ ping www.docker.com
+If vagrant can't find ssh then follow the instructions that appear.
+
+
+Within the ssh-session to the Ubuntu-image you can see the files in the Windows directory of your vagrantfile (in /vagrant):
+```sh
+ls /vagrant
 ```
 
-__3. Configure your RPi__
+- playbook.yml
+- build_cross_gcc.sh
+- install_ansible.sh
+- 2015-09-24-raspbian-jessie.img (copied back from the Pi after running of_v0.9.3_linuxarmv6l_release/scripts/linux/debian/install_dependencies.sh)
 
-Boot your RPi and open a shell. Then enter:
-```bash
-pi@raspberrypi:~ $ sudo raspi-config
-```
-In the `raspi-config` menu, select `Option 1 Expand Filesystem`, change Keyboard layout, etc. and reboot.
+Remark: The 2015-09-24-raspbian-jessie.img is a bit outdated. I also included a Playbook-file with offsets for the newer 2016-05-27-raspbian-jessie-lite.img
 
-Just if `mirrordirector.raspbian.org` mirror is not available, remove `http://mirrordirector.raspbian.org/raspbian/` repository and add a newest.
-```bash
-pi@raspberrypi ~ $ sudo nano /etc/apt/sources.list
+build a recent ansible-version, reply with a lower-case 'y':
+```sh
+cd 
+. /vagrant/install_ansible.sh
+cd /vagrant
 
-#deb http://mirrordirector.raspbian.org/raspbian/ jessie main contrib non-free rpi
-deb http://ftp.cica.es/mirrors/Linux/raspbian/raspbian/ jessie main contrib non-free rpi
-
-# Uncomment line below then 'apt-get update' to enable 'apt-get source'
-#deb-src http://archive.raspbian.org/raspbian/ jessie main contrib non-free rpi
-```
-
-__4. Install OpenFrameworks tools and dependencies into Raspberry Pi__
-
-Download and unzip OpenFrameworks into RPi under `/opt`.
-
-```bash
-pi@raspberrypi:~ $ cd /opt
-pi@raspberrypi:/opt $ sudo wget http://openframeworks.cc/versions/v0.9.0/of_v0.9.0_linuxarmv7l_release.tar.gz
-pi@raspberrypi:/opt $ sudo tar -zxf of_v0.9.0_linuxarmv7l_release.tar.gz
-pi@raspberrypi:/opt $ sudo rm of_v0.9.0_linuxarmv7l_release.tar.gz
-```
-
-Now, update the dependencies required when cross-compiling by running `install_dependencies.sh`.
-```bash
-pi@raspberrypi:~ $ sudo /opt/of_v0.9.0_linuxarmv7l_release/scripts/linux/debian/install_dependencies.sh
-```
-
-Now, compile oF, compile and execute an oF example.
-```bash
-// compiling oF
-pi@raspberrypi:~ $ sudo make Release -C /opt/of_v0.9.0_linuxarmv7l_release/libs/openFrameworksCompiled/project
-...
-se/libs/openFrameworksCompiled/lib/linuxarmv7l/obj/Release/libs/openFrameworks/math/ofMatrix4x4.o /opt/of_v0.9.0_linuxarmv7l_release/libs/openFrameworksCompiled/lib/linuxarmv7l/obj/Release/libs/openFrameworks/math/ofQuaternion.o /opt/of_v0.9.0_linuxarmv7l_release/libs/openFrameworksCompiled/lib/linuxarmv7l/obj/Release/libs/openFrameworks/math/ofVec2f.o
-HOST_OS=Linux
-HOST_ARCH=armv7l
-checking pkg-config libraries:   cairo zlib gstreamer-app-1.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 libudev freetype2 fontconfig sndfile openal openssl libpulse-simple alsa gtk+-3.0
-Done!
-make: Leaving directory '/opt/of_v0.9.0_linuxarmv7l_release/libs/openFrameworksCompiled/project'
-
-// executing an example
-pi@raspberrypi:~ $ sudo make -C /opt/of_v0.9.0_linuxarmv7l_release/apps/myApps/emptyExample
-pi@raspberrypi:~ $ cd /opt/of_v0.9.0_linuxarmv7l_release/apps/myApps/emptyExample
-pi@raspberrypi /opt/of_v0.9.0_linuxarmv7l_release/apps/myApps/emptyExample $ bin/emptyExample
-```
-
-__5. Make an new image file from the existing and updated Raspberry Pi__
-
-Remove the SD card from the Raspberry Pi, insert the  SD card in your Host (in my case is MAC OS X) and use `dd` to make an new image file.
-```bash
-$ diskutil list
-$ diskutil unmountDisk /dev/disk2
-$ sudo dd bs=1m if=/dev/rdisk2 of=2015-09-24-raspbian-jessie-of2.img
-
-15279+0 records in
-15279+0 records out
-16021192704 bytes transferred in 381.968084 secs (41943799 bytes/sec)
-```
-
-_Very important_:
-
-- The `2015-09-24-raspbian-jessie-of.img` will be `shared` and after `mounted` from the guest VM, for that, set the user and permissions to `2015-09-24-raspbian-jessie-of.img` as shown below:
-
-```bash
-$ sudo chmod +x 2015-09-24-raspbian-jessie-of2.img
-$ sudo chown Chilcano 2015-09-24-raspbian-jessie-of2.img
-
-$ ls -la
-total 110439056
-drwxr-xr-x  33 Chilcano  staff         1122 Apr 11 19:12 ./
-drwxr-xr-x  35 Chilcano  staff         1190 Mar 23 19:26 ../
--rwxr-xr-x   1 Chilcano  staff  16021192704 Apr 11 19:19 2015-09-24-raspbian-jessie-of2.img*
--rwxr-xr-x   1 Chilcano  staff   4325376000 Apr 11 17:02 2015-09-24-raspbian-jessie.img*
-...
 ```
 
 
-## Building the Vagrant box
-
-__1. In your MAC OS X, to clone the `rpi-build-and-boot` github repository__
-
-```bash
-$ git clone https://github.com/twobitcircus/rpi-build-and-boot
-$ cd rpi-build-and-boot
+edit the head of playbook.yml, to contain the local user and files to use, and the sizing if not using 2015-09-24-raspbian-jessie.img:
+```sh
+---
+- hosts: localhost
+  remote_user: vagrant
+  vars:
+    of_version: of_v0.9.3_linuxarmv6l_release
+    image: 2015-09-24-raspbian-jessie-after-install_dependencies.img
+# ---
 ```
 
-Copy/Move the newest RPi image created above into `rpi-build-and-boot` folder.
-```bash
-$ mv /Users/Chilcano/Downloads/@isos_vms/raspberrypi-imgs/2015-09-24-raspbian-jessie-of2.img .
+Then run the playbook:
+```sh
+sudo ansible-playbook playbook.yml
+```
+or when using the new 2016-05-27-raspbian-jessie-lite image:
+
+```sh
+sudo ansible-playbook playbook-jessie2016.yml
 ```
 
-__2. Install Vagrant and vbguest plugin into MAC OS X__
+This 2015-09-24-raspbian-jessie image is already to small for an apt-get update/upgrade, so you'll probably need adding a gigabyte to the image:
 
-```bash
-$ wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1.dmg
-$ vagrant plugin install vagrant-vbguest
+```sh
+sudo dd if=/dev/zero bs=10MiB of=/home/vagrant/2015-09-24-raspbian-jessie-after-install_dependencies.img conv=notrunc oflag=append count=100
 ```
 
-__3. Create a new `Vagrantfile` with VirtualBox as provider in the same folder `rpi-build-and-boot`__
+For suspending and resuming the virtual machine in order to restore the /vagrant - shared folder you can use:
+- vagrant suspend
+- vagrant resume
 
+After you stopped the machine you can restart it with
+- vagrant reload
 
-Here the `Vagrantfile` (https://github.com/chilcano/vagrant-rpi-build-and-boot/blob/master/Vagrantfile) for VirtualBox.
+If you get many file errors during usage of the image mounted from the shared /vagrant - folder at /opt/raspberry/root (I do) you can also copy the raspberry-image to /home/vagrant and at the next bootup (poweroff and restart via Virtual Box in order not to link the /vagrant - shared folder) remove this empty /vagrant directory and make your own symlink by
 
-
-__4. Getting `boot` and `root` partitions offsets to do loop mounting in Vagrant__
-
-Using `./tool.py offsets <my_image.img>` I will get the offsets of the `boot` and `root` partitions, after getting offset, copy the output of this tool to the top of `playbook.yml`. 
-To run `tool.py` in MAC OS X, you will need `Python` configured.
-
-```bash
-$ ./tool.py offsets 2015-09-24-raspbian-jessie-of2.img
-
-    image: 2015-09-24-raspbian-jessie-of2.img
-    offset_boot: 4194304
-    offset_root: 62914560
+```sh
+sudo rmdir /vagrant
+sudo ln -s /home/vagrant /vagrant
 ```
 
-The idea to loop-mount the RPi image is to create a full structure of directories and files of a Raspberry Pi distribution under a mounting-point in a Vagrant box. This structure is required to do `cross-compiling` and move/copy new binaries and ARM cross-compiled binaries.
+After a while a cron-script will mount /opt/raspberrypi/boot again from the image.
 
+For making the NFS-Pi-image it is sufficient to copy /opt/raspberrypi/boot/cmdline.txt back to the first partition of your SD-card. This will make your Pi mount the image in /vagrant of your virtual machine as root.
 
-__5. Mounting Raspberry Pi image and booting from Vagrant using NFS__
+Probably after a reboot you can reach your Pi with
 
-Using `./tool.py netboot image.img /dev/rdiskX [--ip=10.0.0.Y]` you will copy just the `boot` partition in a new and tiny SD card. 
-This new SD card with a fresh `boot` partition will be useful to boot from the network/remotely. The RPi will download the `root` partition from Vagrant, in fact, Vagrant will be sharing the custom RPi image (`2015-09-24-raspbian-jessie-of2.img`) via NFS to any Raspberry Pi connected to same network and having a pre-loaded `boot` partition.
-
-The idea behind is to provision a custom RPi image massively avoiding to waste time copying and creating SD card for each Raspberry Pi. Also, this method is useful to provision software, configuration, packages, or in my case, provide cross-compiled software for ARM architectures massively.
-
-```bash
-$ diskutil list
-
-// a new SD on disk3 will be used
-$ diskutil unmountDisk /dev/disk3
-
-$ ./tool.py netboot 2015-09-24-raspbian-jessie-of2.img /dev/rdisk3
-
+```sh
+ssh pi@192.168.178.201
 ```
 
-Note that `tool.py netboot` automatically will assigns to RPi the `10.0.0.101` as IP address and `8.8.8.8` and `8.8.4.4` as DNS servers to `eth0`.
-You can check or modify previously these values by editing the `cmdline.txt` file placed in the `boot` RPi partition. You can edit it from a running Raspberry Pi or from a mounted partition.
+As the DNS is not working rightaway the internet-settings of the Pi can be updated:
+```sh
+sudo bash -c 'cat << EOF > /etc/network/interfaces
+# Please note that this file is written to be used with dhcpcd.
+# For static IP, consult /etc/dhcpcd.conf and man dhcpcd.conf.
 
+auto lo
+iface lo inet loopback
 
-__6. Download and unzip oF (OpenFramework) into `rpi-build-and-boot` folder__
-
-If you forgot copy OpenFramework in your RPi, you can do now. Using the Ansible `playbook.yml`, the `oF` will be copied to your RPi.
-```bash
-$ cd rpi-build-and-boot
-$ wget http://openframeworks.cc/versions/v0.9.0/of_v0.9.0_linuxarmv7l_release.tar.gz
-$ tar -zxf of_v0.9.0_linuxarmv7l_release.tar.gz
+ auto eth0
+    iface eth0 inet static
+        address 192.168.178.201
+        netmask 255.255.255.0
+        gateway 192.168.178.250
+EOF'	
 ```
-
-
-__7. Update the Ansible `playbook.yml`__ 
-
-I've had to tweak the `playbook.yml` to avoid warnings, add DNS to `cmdline.txt` and add `iptables` filters to get Internet access on RPi using Host shared NIC. 
-
-Here the updated Ansible `playbook.yml` (https://github.com/chilcano/vagrant-rpi-build-and-boot/blob/master/playbook.yml).
-
-
-__8. Create the Vagrant box__
-
-```bash
-$ cd rpi-build-and-boot
-$ vagrant up --provider virtualbox
+followed by
+```sh
+sudo /etc/init.d/networking restart
 ```
+I used a similar Ubuntu 14.04-install from VMWare with a SD-card mounted as second harddrive, but that should also be possible with VirtualBox. 
+You can use sfdisk -d /dev/sdb instead of fdisk -d (image) to show the exact entries as mentioned in the original readme.
 
-... let's have coffee  ;)
+I also tried the steps for the Vagrant Ubuntu/Trusty64, and Ubuntu/Xenial64 setups. Ubuntu/Trusty64 also works. Ubuntu/Xenial64 at the time of this writing (2016-08-15) still has issues with the /vagrant - share and another login-name.
 
-After that, restart the Vagrant box recently created.
+Next:
+- [Setting up distcc](setting-up-distcc.md)
 
-```bash
-$ vagrant halt
-$ vagrant up
-```
-
-Connect your Raspberry Pi -with the SD card and boot partition copied- using ethernet clable to your Host PC (in my case is a Mac OS X), wait some seconds and check if Raspberry Pi has started from the `root` partition shared by NFS from the Vagrant box.
-
-```bash
-$ ping raspberrypi.local
-$ ping 10.0.0.101
-```
-
-And check if Raspberry Pi is running but from Vagrant box.
-```bash
-$ vagrant ssh
-
-vagrant@vagrant-ubuntu-trusty-64:~$ ifconfig
-eth0      Link encap:Ethernet  HWaddr 08:00:27:c9:24:d6
-          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
-          inet6 addr: fe80::a00:27ff:fec9:24d6/64 Scope:Link
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:665 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:427 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:67162 (67.1 KB)  TX bytes:54225 (54.2 KB)
-
-eth1      Link encap:Ethernet  HWaddr 08:00:27:b3:e9:a4
-          inet addr:10.0.0.1  Bcast:10.0.0.255  Mask:255.255.255.0
-          inet6 addr: fe80::a00:27ff:feb3:e9a4/64 Scope:Link
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:29474 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:60947 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:5247033 (5.2 MB)  TX bytes:70887820 (70.8 MB)
-
-lo        Link encap:Local Loopback
-          inet addr:127.0.0.1  Mask:255.0.0.0
-          inet6 addr: ::1/128 Scope:Host
-          UP LOOPBACK RUNNING  MTU:65536  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:0
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
-vagrant@vagrant-ubuntu-trusty-64:~$ ping 10.0.0.101
-
-vagrant@vagrant-ubuntu-trusty-64:~$ ping google.com
-```
-
-
-__9. Check if ARM cross-compiling works in the VirtualBox guest__
-
-Check if the cross-compiling Variables have been defined.
-```bash
-vagrant@vagrant-ubuntu-trusty-64:~$ cat /home/vagrant/.profile
-
-...
-export GST_VERSION=1.0
-export RPI_ROOT=/opt/raspberrypi/root
-export TOOLCHAIN_ROOT=/opt/cross/bin
-export PLATFORM_OS=Linux
-export PLATFORM_ARCH=armv7l
-export PKG_CONFIG_PATH=$RPI_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig:$RPI_ROOT/usr/share/pkgconfig:$RPI_ROOT/usr/lib/pkgconfig
-```
-
-Check if RPi has been mounted.
-```bash
-vagrant@vagrant-ubuntu-trusty-64:~$ ll /opt/raspberrypi/boot/
-vagrant@vagrant-ubuntu-trusty-64:~$ ll /opt/raspberrypi/root/
-```
-
-And check if oF works by compiling an example.
-```bash
-$ make -C /opt/openframeworks/apps/myApps/emptyExample
-```
+<b id="f1">1</b>
+- https://github.com/twobitcircus/rpi-build-and-boot/blob/master/README.md
+- https://github.com/chilcano/vagrant-rpi-build-and-boot/blob/master/README.md [↩](#a1)
