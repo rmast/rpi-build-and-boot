@@ -5,7 +5,7 @@ Setting up distcc
 
 To set up distcc in a way the RPi1 can distribute it's compile-jobs to a host with at least a quadcore-processor you can
 ```sh
-sudo apt-get install
+sudo apt-get install distcc
 ```
 on both environments.
 
@@ -51,7 +51,7 @@ sudo /etc/init.d/distcc start
 
 
 
-Op de pi: 
+On the RPi1: 
 ```sh
 sudo vi /etc/distcc/hosts
 ```
