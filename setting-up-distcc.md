@@ -78,7 +78,7 @@ alter the links in /usr/lib/distcc to exactly match the names of the toolchain o
 sudo -s
 cd /usr/lib/distcc
 cat > arm-linux-gnueabihf-wrapper << EOF
-\#!/bin/bash
+#!/bin/bash
 exec /usr/lib/distcc/arm-linux-gnueabihf-g\${0:\$[-2]} "\$@"
 EOF
 chmod a+x arm-linux-gnueabihf-wrapper
