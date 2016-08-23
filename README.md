@@ -57,11 +57,6 @@ edit the head of playbook.yml, to contain the local user and files to use, and t
 
 Then run the playbook:
 ```sh
-sudo ansible-playbook playbook.yml
-```
-or when using the new 2016-05-27-raspbian-jessie-lite image:
-
-```sh
 sudo ansible-playbook playbook-jessie2016.yml
 ```
 
