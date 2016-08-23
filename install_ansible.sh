@@ -1,5 +1,5 @@
 sudo apt-get install git python-pip
-sudo apt-get install python-dev libffi-dev libssl-dev git python-pip
+sudo apt-get install python-dev libffi-dev libssl-dev 
 sudo pip install https://pypi.python.org/packages/3.4/s/setuptools/setuptools-11.3.1-py2.py3-none-any.whl
 git clone https://github.com/ansible/ansible.git
 cd ansible/
