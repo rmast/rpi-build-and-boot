@@ -90,6 +90,10 @@ cd -
 exit
 ```
 
+And now you should be able to start your make -j4 builds from your pi, to distribute them to the host.
+
+--------------------------
+
 Monitor the network traffic with
 ```sh
 sudo apt-get install vnstat
