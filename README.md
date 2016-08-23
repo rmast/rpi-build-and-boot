@@ -101,6 +101,14 @@ Probably after a reboot you can reach your Pi with
 ```sh
 ssh pi@192.168.178.201
 ```
+If it won't connect in a reasonable time then you can try the NFS-server: 
+```sh
+sudo mount 192.168.178.250:/opt/raspberrypi/root /mnt
+```
+and resetting the NFS-server:
+```sh
+sudo /etc/init.d/nfs-kernel-server restart
+```
 
 Next:
 - [Setting up distcc](setting-up-distcc.md)
