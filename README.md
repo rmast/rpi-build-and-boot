@@ -68,7 +68,7 @@ sudo ansible-playbook playbook.yml
 You'll probably need adding some gigabytes to the image:
 
 ```sh
-sudo dd if=/dev/zero bs=10MiB of=/home/vagrant/2016-05-27-raspbian-jessie-lite.img conv=notrunc oflag=append count=100
+sudo dd if=/dev/zero bs=10MiB of=2016-05-27-raspbian-jessie-lite.img conv=notrunc oflag=append count=100
 ```
 You can resize the partition with
 ```sh
