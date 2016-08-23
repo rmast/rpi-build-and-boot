@@ -2,8 +2,7 @@
 - hosts: localhost
   remote_user: vagrant
   vars:
-    of_version: of_v0.9.3_linuxarmv6l_release
-    image: 2016-05-27-raspbian-jessie-lite-after-actions.img
+    image: 2016-05-27-raspbian-jessie-lite.img
     offset_boot: 4194304
     offset_root: 70254592
   tasks:
