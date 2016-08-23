@@ -101,11 +101,6 @@ Probably after a reboot you can reach your Pi with
 ssh pi@192.168.178.201
 ```
 
-I used a similar Ubuntu 14.04-install from VMWare with a SD-card mounted as second harddrive, but that should also be possible with VirtualBox. 
-You can use sfdisk -d /dev/sdb instead of fdisk -d (image) to show the exact entries as mentioned in the original readme.
-
-I also tried the steps for the Vagrant Ubuntu/Trusty64, and Ubuntu/Xenial64 setups. Ubuntu/Trusty64 also works. Ubuntu/Xenial64 at the time of this writing (2016-08-15) still has issues with the /vagrant - share and another login-name.
-
 Next:
 - [Setting up distcc](setting-up-distcc.md)
 
