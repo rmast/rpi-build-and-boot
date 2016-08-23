@@ -7,11 +7,13 @@ To be able to enable this scenario for Windows I had to take some hurdles, as
 - On my DHCP-hosted LAN the 192.168.* - IP - range is better equipped for connecting to the internet than 10.0.*.
 - The /vagrant shared folder gives File I/O errors when hosted from windows
 
-So this is how I did it:
+So this is how I did it: 
 
 First install VirtualBox and Vagrant on Windows 10, but don't install ansible as that's not supported in Windows 10.
 
-From within a directory to which you downloaded ´Vagrantfile´ and the rest of this repository start the Ubuntu-virtual machine with 
+From within a directory to which you downloaded ´Vagrantfile<sup id="a2">[2](#f2)</sup>´ and the rest of this repository start the Ubuntu-virtual machine with 
+
+
 
 ```sh
 vagrant up
@@ -110,3 +112,6 @@ Next:
 <b id="f1">1</b>
 - https://github.com/twobitcircus/rpi-build-and-boot/blob/master/README.md
 - https://github.com/chilcano/vagrant-rpi-build-and-boot/blob/master/README.md [↩](#a1)
+
+<b id="f2">2</b>
+please replace 192.168.178 in vagrantfile and playbook.yml if your router uses another subnet [↩](#a2)
