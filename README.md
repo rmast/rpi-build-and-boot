@@ -52,12 +52,14 @@ edit the head of playbook.yml, to contain the local user and files to use, and t
   remote_user: vagrant
   vars:
     image: 2016-05-27-raspbian-jessie-lite.img
+    offset_boot: 4194304
+    offset_root: 70254592
 # ---
 ```
 
 Then run the playbook:
 ```sh
-sudo ansible-playbook playbook-jessie2016.yml
+sudo ansible-playbook playbook.yml
 ```
 
 This image is already to small for an apt-get update/upgrade, so you'll probably need adding some gigabytes to the image:
