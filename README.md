@@ -11,9 +11,11 @@ So this is how I did it:
 
 First install VirtualBox and Vagrant on Windows, but don't install ansible as that's not supported in Windows.
 
-From within a directory to which you downloaded ´Vagrantfile<sup id="a2">[2](#f2)</sup>´ and the rest of this repository start the Ubuntu-virtual machine with 
+Download this repository as zip and extract it to a directory, to retain the Unix-like linefeeds without carriage returns.
 
+Edit the ´Vagrantfile<sup id="a2">[2](#f2)</sup>´ to suit your needs
 
+From within that extracted directory start the Ubuntu-virtual machine with 
 
 ```sh
 vagrant up
@@ -110,4 +112,4 @@ Next:
 - https://github.com/chilcano/vagrant-rpi-build-and-boot/blob/master/README.md [↩](#a1)
 
 <b id="f2">2</b>
-please replace 192.168.178 in vagrantfile and playbook.yml if your router uses another subnet [↩](#a2)
+- please replace 192.168.178 in vagrantfile and playbook.yml if your router uses another subnet [↩](#a2)
