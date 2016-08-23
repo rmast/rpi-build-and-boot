@@ -109,6 +109,8 @@ I also tried the steps for the Vagrant Ubuntu/Trusty64, and Ubuntu/Xenial64 setu
 Next:
 - [Setting up distcc](setting-up-distcc.md)
 
+----------------------------------------------
+
 <b id="f1">1</b>
 - https://github.com/twobitcircus/rpi-build-and-boot/blob/master/README.md
 - https://github.com/chilcano/vagrant-rpi-build-and-boot/blob/master/README.md [↩](#a1)
