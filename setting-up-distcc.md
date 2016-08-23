@@ -100,3 +100,4 @@ sudo apt-get install vnstat
 vnstat --live
 ```
 
+The network-throughput of the Pi can be boosted with a [USB-Gigabit-ethernet-dongle](http://www.jeffgeerling.com/blogs/jeff-geerling/getting-gigabit-networking)
