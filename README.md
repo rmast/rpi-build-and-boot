@@ -34,9 +34,7 @@ ls /vagrant
 - playbook.yml
 - build_cross_gcc.sh
 - install_ansible.sh
-- 2015-09-24-raspbian-jessie.img (copied back from the Pi after running of_v0.9.3_linuxarmv6l_release/scripts/linux/debian/install_dependencies.sh)
-
-Remark: The 2015-09-24-raspbian-jessie.img is a bit outdated. I also included a Playbook-file with offsets for the newer 2016-05-27-raspbian-jessie-lite.img
+- 2016-05-27-raspbian-jessie-lite.img
 
 build a recent ansible-version, reply with a lower-case 'y':
 ```sh
@@ -47,14 +45,13 @@ cd /vagrant
 ```
 
 
-edit the head of playbook.yml, to contain the local user and files to use, and the sizing if not using 2015-09-24-raspbian-jessie.img:
+edit the head of playbook.yml, to contain the local user and files to use, and the start of the root and boot-partitions as a result of sfdisk -d 2016-05-27-raspbian-jessie-lite.img, from which you take 512 * the start sector:
 ```sh
 ---
 - hosts: localhost
   remote_user: vagrant
   vars:
-    of_version: of_v0.9.3_linuxarmv6l_release
-    image: 2015-09-24-raspbian-jessie-after-install_dependencies.img
+    image: 2016-05-27-raspbian-jessie-lite.img
 # ---
 ```
 
@@ -68,11 +65,18 @@ or when using the new 2016-05-27-raspbian-jessie-lite image:
 sudo ansible-playbook playbook-jessie2016.yml
 ```
 
-This 2015-09-24-raspbian-jessie image is already to small for an apt-get update/upgrade, so you'll probably need adding a gigabyte to the image:
+This image is already to small for an apt-get update/upgrade, so you'll probably need adding some gigabytes to the image:
 
 ```sh
-sudo dd if=/dev/zero bs=10MiB of=/home/vagrant/2015-09-24-raspbian-jessie-after-install_dependencies.img conv=notrunc oflag=append count=100
+sudo dd if=/dev/zero bs=10MiB of=/home/vagrant/2016-05-27-raspbian-jessie-lite.img conv=notrunc oflag=append count=100
 ```
+You can resize the partition with
+```sh
+sudo fdisk 2016-05-27-raspbian-jessie-lite.img
+```
+then delete and recreate the second Linux-partition with the same start-sector.
+
+With resize2fs /dev/loopX (loopX = the mounted root filesystem) you can do an online resize of the filesystem.
 
 For suspending and resuming the virtual machine in order to restore the /vagrant - shared folder you can use:
 - vagrant suspend
