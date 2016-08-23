@@ -96,11 +96,6 @@
     - lineinfile: dest="/home/vagrant/.profile" line="export PLATFORM_OS=Linux"
     - lineinfile: dest="/home/vagrant/.profile" line="export PLATFORM_ARCH=armv7l"
     - lineinfile: dest="/home/vagrant/.profile" line="export PKG_CONFIG_PATH=$RPI_ROOT/usr/lib/arm-linux-gnueabihf/pkgconfig:$RPI_ROOT/usr/share/pkgconfig:$RPI_ROOT/usr/lib/pkgconfig"
-    
-    - unarchive: src={{of_version}}.tar.gz dest=/opt/raspberrypi/root/opt creates=/opt/raspberrypi/root/opt/{{of_version}}
-    - file: src={{of_version}} dest=/opt/raspberrypi/root/opt/openframeworks state=link
-    - file: src=/opt/raspberrypi/root/opt/openframeworks dest=/opt/openframeworks state=link
-    - command: chown -R vagrant /opt/raspberrypi/root/opt/{{of_version}}
 
   handlers:
 
