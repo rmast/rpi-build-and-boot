@@ -84,4 +84,4 @@
     - file: src=/opt/raspberrypi/root/lib/arm-linux-gnueabihf/libz.so.1.2.8         dest=/opt/raspberrypi/root/usr/lib/arm-linux-gnueabihf/libz.so state=link
     - file: src=/opt/raspberrypi/root/lib/arm-linux-gnueabihf/libudev.so.1.5.0      dest=/opt/raspberrypi/root/usr/lib/arm-linux-gnueabihf/libudev.so state=link
 
-   handlers:
+  handlers:
