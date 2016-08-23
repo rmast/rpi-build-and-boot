@@ -25,7 +25,7 @@ NICE="10"
 JOBS=""
 ZEROCONF="false"
 ```
-Download or compile an applicable [toolchain](https://releases.linaro.org/14.09/components/toolchain/binaries/) into the /home/vagrant - directory:
+Download or [compile](http://elinux.org/RPi_Linaro_GCC_Compilation) an applicable [toolchain](https://releases.linaro.org/14.09/components/toolchain/binaries/) into the /home/vagrant - directory:
 ```sh
 wget https://releases.linaro.org/14.09/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux.tar.xz
 tar -xvf gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux.tar.xz --xz
