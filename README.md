@@ -9,7 +9,7 @@ To be able to enable this scenario for Windows I had to take some hurdles, as
 
 So this is how I did it: 
 
-First install VirtualBox and Vagrant on Windows 10, but don't install ansible as that's not supported in Windows 10.
+First install VirtualBox and Vagrant on Windows, but don't install ansible as that's not supported in Windows.
 
 From within a directory to which you downloaded ´Vagrantfile<sup id="a2">[2](#f2)</sup>´ and the rest of this repository start the Ubuntu-virtual machine with 
 
@@ -19,7 +19,7 @@ From within a directory to which you downloaded ´Vagrantfile<sup id="a2">[2](#f
 vagrant up
 ```
 
-This will boot a headless virtual-machine on your Windows-10 PC which can be entered by ssh
+This will boot a headless virtual-machine on your Windows PC which can be entered by ssh
 
 ```sh
 vagrant ssh
@@ -34,7 +34,6 @@ ls /vagrant
 ```
 
 - playbook.yml
-- build_cross_gcc.sh
 - install_ansible.sh
 - 2016-05-27-raspbian-jessie-lite.img
 
