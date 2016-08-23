@@ -64,7 +64,7 @@ Then run the playbook:
 sudo ansible-playbook playbook.yml
 ```
 
-This image is already too small for an apt-get update/upgrade, so you'll probably need adding some gigabytes to the image:
+You'll probably need adding some gigabytes to the image:
 
 ```sh
 sudo dd if=/dev/zero bs=10MiB of=/home/vagrant/2016-05-27-raspbian-jessie-lite.img conv=notrunc oflag=append count=100
